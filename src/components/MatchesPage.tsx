@@ -54,7 +54,7 @@ const mockMatches = [
   },
   {
     id: '6',
-    name: 'Jotaro Jostar',
+    name: 'Kujo Jotaro',
     course: 'ATOC568',
     major: 'Atmospheric and Oceanic Sciences',
     lastMessage: "Can you explain that concept again?",

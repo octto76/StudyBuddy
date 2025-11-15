@@ -1,6 +1,6 @@
-import { motion, useMotionValue, useTransform } from 'motion/react';
-import { X, Heart, Star, MapPin, Calendar } from 'lucide-react';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+import { motion, useMotionValue, useTransform } from "motion/react";
+import { X, Heart, Star, MapPin, Calendar } from "lucide-react";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 interface SwipeCardProps {
   user: {
@@ -14,7 +14,7 @@ interface SwipeCardProps {
     bio: string;
     image: string;
   };
-  onSwipe: (direction: 'left' | 'right' | 'up') => void;
+  onSwipe: (direction: "left" | "right" | "up") => void;
 }
 
 export function SwipeCard({ user, onSwipe }: SwipeCardProps) {
@@ -24,7 +24,7 @@ export function SwipeCard({ user, onSwipe }: SwipeCardProps) {
 
   const handleDragEnd = (_: any, info: any) => {
     if (Math.abs(info.offset.x) > 150) {
-      onSwipe(info.offset.x > 0 ? 'right' : 'left');
+      onSwipe(info.offset.x > 0 ? "right" : "left");
     }
   };
 
@@ -44,7 +44,7 @@ export function SwipeCard({ user, onSwipe }: SwipeCardProps) {
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
-        
+
         {/* Course Badge on Image */}
         <div className="absolute top-6 left-6">
           <span className="inline-block px-4 py-2 bg-linear-to-r from-[#757bc8] to-[#9fa0ff] text-white rounded-xl shadow-lg">
@@ -127,21 +127,14 @@ export function SwipeCard({ user, onSwipe }: SwipeCardProps) {
       {/* Action Buttons */}
       <div className="px-6 pb-6 pt-2 flex justify-center gap-6">
         <button
-          onClick={() => onSwipe('left')}
+          onClick={() => onSwipe("left")}
           className="w-16 h-16 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center hover:border-red-400 hover:bg-red-50 hover:scale-110 transition-all shadow-md"
         >
           <X className="w-7 h-7 text-red-500" />
         </button>
-        
+
         <button
-          onClick={() => onSwipe('up')}
-          className="w-16 h-16 rounded-full bg-linear-to-br from-[#9fa0ff] to-[#e0c3fc] flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
-        >
-          <Star className="w-7 h-7 text-white fill-white" />
-        </button>
-        
-        <button
-          onClick={() => onSwipe('right')}
+          onClick={() => onSwipe("right")}
           className="w-16 h-16 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center hover:border-green-400 hover:bg-green-50 hover:scale-110 transition-all shadow-md"
         >
           <Heart className="w-7 h-7 text-green-500" />
