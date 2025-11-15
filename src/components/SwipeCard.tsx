@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useTransform } from "motion/react";
-import { X, Heart, Star, MapPin, Calendar } from "lucide-react";
+import { X, Heart, Calendar } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 interface SwipeCardProps {

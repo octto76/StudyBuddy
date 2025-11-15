@@ -1,68 +1,73 @@
-import { useState } from 'react';
-import { Calendar, MapPin, Users, Clock, ArrowLeft, Send } from 'lucide-react';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+import { useState } from "react";
+import { Calendar, MapPin, Users, Clock, ArrowLeft, Send } from "lucide-react";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 const mockSession = {
-  id: '1',
-  title: 'CS 170 Midterm Prep',
-  course: 'CS 170',
-  date: 'Nov 16, 2025',
-  time: '3:00 PM',
-  duration: '2 hours',
-  location: 'Main Library, 3rd Floor',
-  description: "Let's work through the practice problems together and review the key concepts for the upcoming midterm. Bring your notes and questions!",
+  id: "1",
+  title: "Political Debate Practice",
+  course: "POLI 450",
+  date: "Nov 16, 2025",
+  time: "5:00 PM",
+  duration: "3 hours",
+  location: "Royal Victoria College Study Room",
+  description:
+    "Let's debate together about the politics surrounding the American government and how they relate to the wishes of the Founding Fathers",
   host: {
-    name: 'Sarah Chen',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
-    major: 'Computer Science',
+    name: "Benjamin Franklin",
+    image:
+      "https://res.cloudinary.com/grand-canyon-university/image/fetch/w_750,h_564,c_fill,g_faces,q_auto/https://www.gcu.edu/sites/default/files/images/articles/419cbf347df385b8b5ae8e23dd1c1ebd1b1ca35a.jpg",
+    major: "Political Science & Economics",
   },
   participants: [
     {
-      name: 'Marcus Johnson',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
-      major: 'Mathematics',
+      name: "Albert Einstein",
+      image:
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%2Fid%2FOIP.jFo3bPJA8j7zMZp5EkEtFQHaFj%3Fcb%3Ducfimg2%26pid%3DApi%26ucfimg%3D1&f=1&ipt=c4cc08dbd04f01435a660a8c3579a10d99ded276286ccf442e12cda3c991c8b3",
+      major: "Physics",
     },
     {
-      name: 'Emily Rodriguez',
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop',
-      major: 'Biology',
+      name: "Maomao La",
+      image:
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2Foriginals%2F64%2Fd6%2F25%2F64d62592d8dcf12afdddda300d45e3b5.png&f=1&nofb=1&ipt=f528c09d23260b685310553067a012cc2623b7b93c134048b64b8317c7c33a2d",
+      major: "Pharmacology & Political Science",
     },
     {
-      name: 'Alex Kim',
-      image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop',
-      major: 'Economics',
+      name: "A cow",
+      image:
+        "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fkidspressmagazine.com%2Fwp-content%2Fuploads%2F2014%2F04%2Fdreamstime_xl_155237.jpg&f=1&nofb=1&ipt=ff3d02b21da1938b4c82a5a8c1d9b24a82c4be617d7639abe431f2c66e6277bb",
+      major: "Agricultural Studies",
     },
   ],
-  maxParticipants: 6,
+  maxParticipants: 8,
 };
 
 const mockChatMessages = [
   {
-    id: '1',
-    sender: 'Sarah Chen',
-    text: 'Hey everyone! Looking forward to our study session tomorrow.',
-    time: '2:30 PM',
+    id: "1",
+    sender: "Benjamin Franklin",
+    text: "Looking forward to talk American politics to all of you",
+    time: "2:30 PM",
     isHost: true,
   },
   {
-    id: '2',
-    sender: 'Marcus Johnson',
-    text: 'Same here! Should we focus on dynamic programming or graph algorithms?',
-    time: '2:45 PM',
+    id: "2",
+    sender: "Marcus Johnson",
+    text: "If we start at 5, time might dilate and suddenly it’s 6:15. Happens to me all the time.",
+    time: "2:45 PM",
     isHost: false,
   },
   {
-    id: '3',
-    sender: 'Sarah Chen',
-    text: "Let's do both! We can start with DP and then move to graphs if we have time.",
-    time: '2:50 PM',
-    isHost: true,
+    id: "3",
+    sender: "Maomao La",
+    text: "我可以在自习室里制毒吗？我不确定这是否允许。",
+    time: "2:50 PM",
+    isHost: false,
   },
   {
-    id: '4',
-    sender: 'Emily Rodriguez',
-    text: "Sounds good! I'll bring the practice problems from discussion.",
-    time: '3:15 PM',
+    id: "4",
+    sender: "A cow",
+    text: "MOOOOOOOOOOOOOOOOOOO!!!",
+    time: "3:15 PM",
     isHost: false,
   },
 ];
@@ -72,7 +77,7 @@ interface SessionDetailPageProps {
 }
 
 export function SessionDetailPage({ onNavigate }: SessionDetailPageProps) {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   return (
     <div className="flex h-screen">
@@ -80,7 +85,7 @@ export function SessionDetailPage({ onNavigate }: SessionDetailPageProps) {
       <div className="w-[480px] bg-white border-r border-gray-200 overflow-y-auto">
         <div className="p-8">
           <button
-            onClick={() => onNavigate('sessions')}
+            onClick={() => onNavigate("sessions")}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -93,18 +98,20 @@ export function SessionDetailPage({ onNavigate }: SessionDetailPageProps) {
             <span className="inline-block px-3 py-1 bg-white/80 backdrop-blur-sm text-[#757bc8] rounded-lg text-sm mb-4">
               {mockSession.course}
             </span>
-            
+
             <div className="space-y-3 mb-6">
               <div className="flex items-center gap-3 text-gray-700">
                 <Calendar className="w-5 h-5 text-[#8e94f2]" />
-                <span>{mockSession.date} at {mockSession.time}</span>
+                <span>
+                  {mockSession.date} at {mockSession.time}
+                </span>
               </div>
-              
+
               <div className="flex items-center gap-3 text-gray-700">
                 <Clock className="w-5 h-5 text-[#bbadff]" />
                 <span>{mockSession.duration}</span>
               </div>
-              
+
               <div className="flex items-center gap-3 text-gray-700">
                 <MapPin className="w-5 h-5 text-[#dab6fc]" />
                 <span>{mockSession.location}</span>
@@ -129,7 +136,9 @@ export function SessionDetailPage({ onNavigate }: SessionDetailPageProps) {
               />
               <div>
                 <p>{mockSession.host.name}</p>
-                <p className="text-sm text-gray-600">{mockSession.host.major}</p>
+                <p className="text-sm text-gray-600">
+                  {mockSession.host.major}
+                </p>
               </div>
             </div>
           </div>
@@ -140,10 +149,13 @@ export function SessionDetailPage({ onNavigate }: SessionDetailPageProps) {
               <h3>Participants</h3>
               <div className="flex items-center gap-1 text-sm text-gray-600">
                 <Users className="w-4 h-4" />
-                <span>{mockSession.participants.length + 1}/{mockSession.maxParticipants}</span>
+                <span>
+                  {mockSession.participants.length + 1}/
+                  {mockSession.maxParticipants}
+                </span>
               </div>
             </div>
-            
+
             <div className="space-y-3">
               {mockSession.participants.map((participant, i) => (
                 <div key={i} className="flex items-center gap-3">
@@ -201,8 +213,8 @@ export function SessionDetailPage({ onNavigate }: SessionDetailPageProps) {
               placeholder="Type a message..."
               className="flex-1 px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:border-[#9fa0ff]"
               onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  setMessage('');
+                if (e.key === "Enter") {
+                  setMessage("");
                 }
               }}
             />
