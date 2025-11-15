@@ -130,9 +130,12 @@ export function SessionsPage({ onNavigate }: SessionsPageProps) {
 
           <select className="px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:border-[#9fa0ff]">
             <option>All Courses</option>
-            <option>CS 170</option>
-            <option>Math 110</option>
-            <option>Bio 1A</option>
+            <option>BIOL 219</option>
+            <option>BIOL 335</option>
+            <option>COMP 202</option>
+            <option>COMP 302</option>
+            <option>MUPG 571</option>
+            <option>POLI 450</option>
           </select>
 
           <select className="px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:border-[#9fa0ff]">
