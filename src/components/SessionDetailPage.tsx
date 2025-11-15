@@ -51,7 +51,7 @@ const mockChatMessages = [
   },
   {
     id: "2",
-    sender: "Marcus Johnson",
+    sender: "Albert Einstein",
     text: "If we start at 5, time might dilate and suddenly it’s 6:15. Happens to me all the time.",
     time: "2:45 PM",
     isHost: false,
