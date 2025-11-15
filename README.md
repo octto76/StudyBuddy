@@ -1,74 +1,116 @@
-# React + TypeScript + Vite
+# Study Match App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules. 
+A simple to use application for college students to find study partners with. Connect with a large network of other students to find one who matches your study style and interests!
 
+## Feature List
 
-Currently, two official plugins are available:
+- Core Concept
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+  - Tinder-style interface for matching with study partners
+  - Swipe LEFT to pass, RIGHT to show interest
+  - Match occurs when both users swipe RIGHT on each other
 
-## React Compiler
+- User Profiles
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+  - Basic info (name, school/program, year)
+  - Currently studying for (...)
+  - Courses currently taking / interested in
+  - Study preferences (silent vs. collaborative, morning/night, etc.)
+  - Option to show/hide certain details from public view
 
-## Expanding the ESLint configuration
+- Matching & Discovery
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+  - Swipe deck of nearby/compatible students
+  - Matching algorithm based on:
+    - Shared courses
+    - Similar availability
+    - Preferred study locations
+  - Ability to skip, like, or super-like (optional stretch)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Post-Match Actions
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+  - Start 1:1 chat with matched user
+  - Propose a study session:
+    - Pick a study spot (e.g., campus library, café, study room)
+    - Choose a time and date
+    - Select which course you want to study together
+  - Confirm study session details between both users
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Study Sessions
+
+  - Create a “Study Session” event after both users agree
+  - Option to:
+    - Lock the session to only 2 people
+    - Make the session public so others can discover and request to join
+  - Session details:
+    - Title (e.g., “MATH 240 Midterm Prep”)
+    - Location
+    - Time & duration
+    - Max number of participants (if not locked to 2)
+
+- Group Join / Public Sessions
+
+  - Public sessions visible in a “Discover Sessions” tab
+  - Other students can:
+    - View session details
+    - Request to join
+  - Host can accept/decline join requests
+  - Session chat for all participants
+
+- Chat & Communication
+
+  - Private DMs between matched users
+  - Session-based group chats for each study event
+  - Open question:
+    - In-app chat vs. integration with external platform (e.g., Discord)
+    - Option 1: Native in-app messaging for DMs and group chats
+    - Option 2: Auto-create/join Discord servers/channels for classes or sessions
+
+- Class / Course Spaces (Optional Stretch)
+
+  - “Class servers” or channels for each course
+  - Students enrolled in the same course can:
+    - Post quick questions
+    - Advertise upcoming study sessions
+    - Find last-minute partners
+
+- Session Management
+
+  - List of upcoming sessions the user is attending or hosting
+  - Past sessions history (optional stretch)
+  - Ability to edit or cancel a session
+  - Push notifications / reminders (e.g., 1 hour before session)
+
+- Scope & Presentation Focus
+  - Small, well-defined feature set for hackathon:
+    - Swipe-based matching
+    - Match chat
+    - Simple session creation (time, place, course)
+    - Possibly add map for location
+    - Option to lock or open session to others
+  - Emphasis on:
+    - Clean UI (Tinder-style swipe + simple session cards)
+    - Smooth flow from matching → chatting → scheduling
+    - Strong demo narrative: “From match to study session in under a minute”
+
+### Current Project Structure
+
 ```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+src/
+├─ components/
+│ ├─ Navbar.tsx
+│ ├─ SwipeCard.tsx
+│ └─ Button.tsx
+├─ pages/
+│ ├─ AuthPage.tsx
+│ ├─ SwipePage.tsx
+│ └─ SessionsPage.tsx
+├─ hooks/
+│ └─ useAuth.ts
+├─ lib/
+│ └─ supabaseClient.ts # or firebaseClient.ts later
+├─ types/
+│ └─ index.ts # User, Session, Match types
+├─ App.tsx
+└─ main.tsx
 ```
