@@ -16,8 +16,13 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
 
   return (
     <nav className="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 flex flex-col p-6">
-      <div className="mb-12">
-        <h1 className="bg-gradient-to-r from-[#757bc8] to-[#e0c3fc] bg-clip-text text-transparent">
+      <div className="mb-12 flex items-center gap-3">
+        <img 
+          src="/images/logo.png" 
+          alt="StudyBuddy logo" 
+          className="h-16 w-16"
+        />
+        <h1 className="bg-gradient-to-r from-[#757bc8] to-[#e0c3fc] bg-clip-text text-transparent text-lg font-bold">
           StudyBuddy
         </h1>
       </div>
