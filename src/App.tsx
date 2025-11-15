@@ -11,6 +11,7 @@ import { ChatPage } from './components/ChatPage';
 import { CreateSessionPage } from './components/CreateSessionPage';
 import { SessionsPage } from './components/SessionsPage';
 import { SessionDetailPage } from './components/SessionDetailPage';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function App() {
   const { user, loading: authLoading } = useAuth();
@@ -88,10 +89,25 @@ export default function App() {
   const isFullWidth = currentPage === 'chat' || currentPage === 'session-detail';
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="flex">
       <Navigation currentPage={currentPage} onNavigate={handleNavigate} />
-      <main className={isFullWidth ? 'ml-64' : 'ml-64'}>
-        {renderPage()}
+      
+      <main className="ml-64 flex-1">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentPage}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+          >
+            {currentPage === 'discover' && <DiscoverPage />}
+            {currentPage === 'sessions' && <SessionsPage />}
+            {currentPage === 'matches' && <MatchesPage />}
+            {currentPage === 'chat' && <ChatPage />}
+            {currentPage === 'profile' && <ProfilePage />}
+          </motion.div>
+        </AnimatePresence>
       </main>
     </div>
   );
