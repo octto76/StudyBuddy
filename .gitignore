@@ -13,6 +13,11 @@ dist-ssr
 *.local
 .env
 .env.local
+.DATABASE_SETUP.md
+.IMPLEMENTATION_SUMMARY.md
+.PROFILE_FEATURES_README.md
+.UPDATES_SUMMARY.md
+.FINAL_SUMMARY.md
 
 # Editor directories and files
 .vscode/*

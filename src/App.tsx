@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from "./context/AuthContext";
+import { useProfile } from "./hooks/useProfile";
 import AuthPage from "./pages/AuthPage";
+import ProfileSetupPage from "./pages/ProfileSetupPage";
 import { Navigation } from './components/Navigation';
 import { DiscoverPage } from './components/DiscoverPage';
 import { ProfilePage } from './components/ProfilePage';
@@ -11,12 +13,13 @@ import { SessionsPage } from './components/SessionsPage';
 import { SessionDetailPage } from './components/SessionDetailPage';
 
 export default function App() {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { profile, loading: profileLoading, setProfile } = useProfile();
   const [currentPage, setCurrentPage] = useState('discover');
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
 
-  // While checking token/session
-  if (loading) {
+  // While checking auth or profile
+  if (authLoading || profileLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-[#757bc8] to-[#e0c3fc] bg-clip-text text-transparent mb-4">
@@ -30,6 +33,26 @@ export default function App() {
   // If no user → show Login/Register
   if (!user) {
     return <AuthPage />;
+  }
+
+  // If user hasn't completed onboarding → show ProfileSetupPage
+  // Show onboarding if: profile is null (new user) OR profile exists but not onboarded
+  const needsOnboarding = !profile || !profile.has_onboarded;
+  
+  if (needsOnboarding) {
+    return (
+      <ProfileSetupPage
+        onDone={() => {
+          // Update local profile state to reflect onboarding completion
+          if (profile) {
+            setProfile({ ...profile, has_onboarded: true });
+          } else {
+            // For new users, reload to fetch the updated profile
+            window.location.reload();
+          }
+        }}
+      />
+    );
   }
 
   // If logged in → show real app with navigation
