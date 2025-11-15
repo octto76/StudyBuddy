@@ -4,7 +4,7 @@ import { Badge } from './ui/badge';
 
 export function ProfilePage() {
   const userProfile = {
-    name: 'Alex Thompson',
+    name: 'Ali',
     major: 'Computer Science',
     year: 'Junior',
     location: 'Berkeley, CA',
