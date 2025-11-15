@@ -5,7 +5,7 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 const mockChats = [
   {
     id: '1',
-    name: 'Maxim Q.',
+    name: 'Maxim Qu',
     course: 'COMP302',
     lastMessage: 'Hey! Want to study for the midterm1 together?',
     time: '2h ago',
@@ -23,12 +23,12 @@ const mockChats = [
   },
   {
     id: '3',
-    name: 'Wonyoung Jang',
-    course: 'PSYC213',
+    name: 'Emily Rodriguez',
+    course: 'Bio 1A',
     lastMessage: 'Are you free tomorrow?',
     time: '1d ago',
     unread: true,
-    image: 'https://tse4.mm.bing.net/th/id/OIP.nbziaMpyfb0DYAbLlq7FnAHaLI?cb=ucfimg2ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3',
+    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop',
   },
 ];
 
@@ -46,7 +46,7 @@ const initialConversations = {
     { id: '1', sender: 'Cheela Z.', text: 'Thanks for the help!', time: '5:10 PM', isMe: false },
   ],
   '3': [
-    { id: '1', sender: 'Wonyoung Jang', text: 'Are you free tomorrow?', time: '1:00 PM', isMe: false },
+    { id: '1', sender: 'Emily Rodriguez', text: 'Are you free tomorrow?', time: '1:00 PM', isMe: false },
   ],
 };
 
