@@ -1,4 +1,3 @@
-import './App.css'
 import { useState } from 'react';
 import { useAuth } from "./context/AuthContext";
 import AuthPage from "./pages/AuthPage";
