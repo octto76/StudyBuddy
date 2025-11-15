@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 export function ProfilePage() {
   const { signOut } = useAuth();
   const userProfile = {
-    name: 'Alex Thompson',
+    name: 'Ali',
     major: 'Computer Science',
     year: 'Junior',
     location: 'Berkeley, CA',
