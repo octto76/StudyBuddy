@@ -4,11 +4,11 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 const mockChats = [
   {
-    id: "1",
-    name: "Maxim Q.",
-    course: "COMP302",
-    lastMessage: "Hey! Want to study for the midterm1 together?",
-    time: "2h ago",
+    id: '1',
+    name: 'Maxim Q.',
+    course: 'COMP302',
+    lastMessage: 'Hey! Want to study for the midterm1 together?',
+    time: '2h ago',
     unread: true,
     image: "/images/maxim.jpg",
   },
@@ -82,6 +82,7 @@ const initialConversations = {
       isMe: false,
     },
   ],
+
   "3": [
     {
       id: "1",
