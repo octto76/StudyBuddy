@@ -1,2 +1,64 @@
 @import "tailwindcss";
 
+/* Reset + base */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { height: 100%; }
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #f7f8fb;
+  color: #111;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Layout helpers */
+.container { max-width: 960px; margin: 0 auto; padding: 20px; }
+.center { display: flex; justify-content: center; align-items: center; }
+
+/* Navbar */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid #e6e6e6;
+  background: #fff;
+}
+nav a { color: #444; text-decoration: none; margin-right: 12px; }
+nav a.logo { font-weight: 700; color: #111; }
+
+/* Swipe deck & card */
+.swipe-deck { display: flex; justify-content: center; align-items: center; min-height: 60vh; position: relative; }
+.swipe-card {
+  width: 320px;
+  max-width: 90vw;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  user-select: none;
+}
+.swipe-card img { width: 100%; height: 200px; object-fit: cover; display: block; }
+.swipe-card .content { padding: 12px; }
+.swipe-card h3 { margin: 0 0 6px; font-size: 1.1rem; }
+.swipe-card p { margin: 0; color: #666; }
+.swipe-actions { display: flex; justify-content: space-between; margin-top: 12px; }
+
+/* Buttons */
+.button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+}
+.button:active { transform: translateY(1px); }
+.button.like { background: #0a84ff; color: #fff; border: none; }
+.button.nope { background: #fff; color: #333; border: 1px solid #eee; }
+
+/* Utilities */
+.muted { color: #888; font-size: .9rem; }
+.hidden { display: none; }
+
