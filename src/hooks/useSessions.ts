@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import { StudySession, SessionParticipant, SessionWithDetails, Profile } from '../types';
+import type { StudySession, SessionWithDetails, Profile } from '../types';
 
 export function useSessions(userId: string | null) {
   const [mySessions, setMySessions] = useState<SessionWithDetails[]>([]);

@@ -25,9 +25,33 @@ export function SessionsPage({ onNavigate }: SessionsPageProps) {
       const matchesCourse = courseFilter === "All Courses" || 
         session.course_code === courseFilter;
       
-      // Add date filtering logic if needed
+      // Date filtering logic
+      let matchesDate = true;
+      if (dateFilter !== "All Dates") {
+        const now = new Date();
+        const sessionDate = new Date(session.start_time);
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const weekEnd = new Date(today);
+        weekEnd.setDate(weekEnd.getDate() + 7);
+
+        switch (dateFilter) {
+          case "Today":
+            matchesDate = sessionDate >= today && sessionDate < tomorrow;
+            break;
+          case "Tomorrow":
+            matchesDate = sessionDate >= tomorrow && sessionDate < weekEnd;
+            break;
+          case "This Week":
+            matchesDate = sessionDate >= today && sessionDate < weekEnd;
+            break;
+          default:
+            matchesDate = true;
+        }
+      }
       
-      return matchesSearch && matchesCourse;
+      return matchesSearch && matchesCourse && matchesDate;
     });
   };
 
