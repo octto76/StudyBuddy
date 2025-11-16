@@ -36,6 +36,12 @@ export default function AuthPage() {
       <div className="w-full max-w-md">
         {/* Logo/Header */}
         <div className="text-center mb-8">
+          <img
+            src="/images/logo.png"
+            alt="StudyBuddy logo"
+            className="mx-auto mb-4 object-contain"
+            style={{ width: "180px", height: "180px" }}
+          />
           <h1 className="text-4xl font-bold bg-gradient-to-r from-[#757bc8] to-[#e0c3fc] bg-clip-text text-transparent mb-2">
             StudyBuddy
           </h1>

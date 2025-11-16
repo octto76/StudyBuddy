@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
+import type { AvailabilitySlot } from '../types';
 
 interface ProfileSetupPageProps {
   onDone: () => void;
@@ -22,6 +23,12 @@ export default function ProfileSetupPage({ onDone }: ProfileSetupPageProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  
+  // Availability state
+  const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
+  const [selectedDay, setSelectedDay] = useState('mon');
+  const [startTime, setStartTime] = useState('09:00');
+  const [endTime, setEndTime] = useState('17:00');
 
   useEffect(() => {
     // Load and parse courses2.csv from public directory
@@ -108,6 +115,25 @@ export default function ProfileSetupPage({ onDone }: ProfileSetupPageProps) {
     }
   };
 
+  const addAvailabilitySlot = () => {
+    if (startTime >= endTime) {
+      alert('End time must be after start time');
+      return;
+    }
+    
+    const newSlot: AvailabilitySlot = {
+      day: selectedDay,
+      start: startTime,
+      end: endTime,
+    };
+    
+    setAvailability([...availability, newSlot]);
+  };
+
+  const removeAvailabilitySlot = (index: number) => {
+    setAvailability(availability.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -146,6 +172,7 @@ export default function ProfileSetupPage({ onDone }: ProfileSetupPageProps) {
           current_subject: currentSubjects.join(', '),
           courses: selectedCourses,
           avatar_url: avatarUrl || null,
+          availability: availability.length > 0 ? availability : null,
           has_onboarded: true,
         })
         .eq('id', user.id);
@@ -394,6 +421,83 @@ export default function ProfileSetupPage({ onDone }: ProfileSetupPageProps) {
             
             <p className="text-xs text-gray-500">
               Selected {selectedCourses.length} course{selectedCourses.length !== 1 ? 's' : ''}
+            </p>
+          </div>
+
+          {/* Availability */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              When are you available to study? (Optional)
+            </label>
+            
+            {/* Selected availability slots */}
+            {availability.length > 0 && (
+              <div className="mb-3 flex flex-wrap gap-2">
+                {availability.map((slot, index) => {
+                  const dayMap: Record<string, string> = {
+                    mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', 
+                    fri: 'Fri', sat: 'Sat', sun: 'Sun'
+                  };
+                  return (
+                    <span
+                      key={index}
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-[#dab6fc]/10 text-[#757bc8] text-sm rounded-full"
+                    >
+                      {dayMap[slot.day]} {slot.start}-{slot.end}
+                      <button
+                        type="button"
+                        onClick={() => removeAvailabilitySlot(index)}
+                        className="hover:bg-[#dab6fc]/20 rounded-full p-0.5 text-lg leading-none"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="flex gap-2">
+              <select
+                value={selectedDay}
+                onChange={(e) => setSelectedDay(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#757bc8] focus:border-transparent"
+              >
+                <option value="mon">Monday</option>
+                <option value="tue">Tuesday</option>
+                <option value="wed">Wednesday</option>
+                <option value="thu">Thursday</option>
+                <option value="fri">Friday</option>
+                <option value="sat">Saturday</option>
+                <option value="sun">Sunday</option>
+              </select>
+              
+              <input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#757bc8] focus:border-transparent"
+              />
+              
+              <span className="flex items-center text-gray-500">to</span>
+              
+              <input
+                type="time"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#757bc8] focus:border-transparent"
+              />
+              
+              <button
+                type="button"
+                onClick={addAvailabilitySlot}
+                className="px-4 py-2 bg-[#dab6fc]/20 text-[#757bc8] rounded-lg hover:bg-[#dab6fc]/30 transition-colors"
+              >
+                Add
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Added {availability.length} time slot{availability.length !== 1 ? 's' : ''}
             </p>
           </div>
 

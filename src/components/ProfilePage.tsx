@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
-import { Edit, Book, Target, LogOut, Camera, X } from 'lucide-react';
+import { Edit, Book, Target, LogOut, Camera, X, Calendar } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Badge } from './ui/badge';
 import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../hooks/useProfile';
 import { supabase } from '../lib/supabaseClient';
+import type { AvailabilitySlot } from '../types';
 
 export function ProfilePage() {
   const { user, signOut } = useAuth();
@@ -31,6 +32,12 @@ export function ProfilePage() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Availability state
+  const [editAvailability, setEditAvailability] = useState<AvailabilitySlot[]>([]);
+  const [selectedDay, setSelectedDay] = useState('mon');
+  const [startTime, setStartTime] = useState('09:00');
+  const [endTime, setEndTime] = useState('17:00');
 
   useEffect(() => {
     if (!user || !profile) return;
@@ -92,6 +99,7 @@ export function ProfilePage() {
       setEditSubjects(profile.current_subject ? profile.current_subject.split(', ').filter(Boolean) : []);
       setEditCourses(profile.courses || []);
       setEditAvatarUrl(profile.avatar_url || '');
+      setEditAvailability(profile.availability || []);
     }
   }, [isEditMode, profile]);
 
@@ -176,6 +184,25 @@ export function ProfilePage() {
       ).slice(0, 100)
     : [];
 
+  const addAvailabilitySlot = () => {
+    if (startTime >= endTime) {
+      alert('End time must be after start time');
+      return;
+    }
+    
+    const newSlot: AvailabilitySlot = {
+      day: selectedDay,
+      start: startTime,
+      end: endTime,
+    };
+    
+    setEditAvailability([...editAvailability, newSlot]);
+  };
+
+  const removeAvailabilitySlot = (index: number) => {
+    setEditAvailability(editAvailability.filter((_, i) => i !== index));
+  };
+
   const handleSaveProfile = async () => {
     if (!user || !profile) return;
 
@@ -191,6 +218,7 @@ export function ProfilePage() {
           current_subject: editSubjects.join(', '),
           courses: editCourses,
           avatar_url: editAvatarUrl || null,
+          availability: editAvailability.length > 0 ? editAvailability : null,
         })
         .eq('id', user.id);
 
@@ -206,6 +234,7 @@ export function ProfilePage() {
         current_subject: editSubjects.join(', '),
         courses: editCourses,
         avatar_url: editAvatarUrl || null,
+        availability: editAvailability.length > 0 ? editAvailability : null,
       });
 
       setIsEditMode(false);
@@ -330,6 +359,32 @@ export function ProfilePage() {
                 {topic}
               </Badge>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Availability */}
+      {profile.availability && profile.availability.length > 0 && (
+        <div className="bg-white rounded-3xl p-8 mb-6 border border-gray-200">
+          <div className="flex items-center gap-2 mb-6">
+            <Calendar className="w-5 h-5 text-[#dab6fc]" />
+            <h3>Availability</h3>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {profile.availability.map((slot, index) => {
+              const dayMap: Record<string, string> = {
+                mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', 
+                fri: 'Fri', sat: 'Sat', sun: 'Sun'
+              };
+              return (
+                <Badge
+                  key={index}
+                  className="px-4 py-2 bg-[#dab6fc]/10 text-[#757bc8] border border-[#dab6fc]/20"
+                >
+                  {dayMap[slot.day]} {slot.start}-{slot.end}
+                </Badge>
+              );
+            })}
           </div>
         </div>
       )}
@@ -540,6 +595,83 @@ export function ProfilePage() {
                     Start typing to search for courses
                   </p>
                 )}
+              </div>
+
+              {/* Availability */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  When are you available to study?
+                </label>
+                
+                {/* Selected availability slots */}
+                {editAvailability.length > 0 && (
+                  <div className="mb-3 flex flex-wrap gap-2">
+                    {editAvailability.map((slot, index) => {
+                      const dayMap: Record<string, string> = {
+                        mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', 
+                        fri: 'Fri', sat: 'Sat', sun: 'Sun'
+                      };
+                      return (
+                        <span
+                          key={index}
+                          className="inline-flex items-center gap-1 px-3 py-1 bg-[#dab6fc]/10 text-[#757bc8] text-sm rounded-full"
+                        >
+                          {dayMap[slot.day]} {slot.start}-{slot.end}
+                          <button
+                            type="button"
+                            onClick={() => removeAvailabilitySlot(index)}
+                            className="hover:bg-[#dab6fc]/20 rounded-full p-0.5 text-lg leading-none"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <div className="flex gap-2 flex-wrap">
+                  <select
+                    value={selectedDay}
+                    onChange={(e) => setSelectedDay(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#757bc8] focus:border-transparent"
+                  >
+                    <option value="mon">Monday</option>
+                    <option value="tue">Tuesday</option>
+                    <option value="wed">Wednesday</option>
+                    <option value="thu">Thursday</option>
+                    <option value="fri">Friday</option>
+                    <option value="sat">Saturday</option>
+                    <option value="sun">Sunday</option>
+                  </select>
+                  
+                  <input
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#757bc8] focus:border-transparent"
+                  />
+                  
+                  <span className="flex items-center text-gray-500">to</span>
+                  
+                  <input
+                    type="time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#757bc8] focus:border-transparent"
+                  />
+                  
+                  <button
+                    type="button"
+                    onClick={addAvailabilitySlot}
+                    className="px-4 py-2 bg-[#dab6fc]/20 text-[#757bc8] rounded-lg hover:bg-[#dab6fc]/30 transition-colors"
+                  >
+                    Add
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  {editAvailability.length} time slot{editAvailability.length !== 1 ? 's' : ''}
+                </p>
               </div>
 
               {/* Action Buttons */}

@@ -1,5 +1,11 @@
 // Type definitions for StudyBuddy
 
+export interface AvailabilitySlot {
+  day: string; // e.g., "mon", "tue", "wed"
+  start: string; // e.g., "13:00"
+  end: string; // e.g., "18:00"
+}
+
 export interface Profile {
   id: string;
   username: string;
@@ -13,6 +19,7 @@ export interface Profile {
   has_onboarded: boolean;
   created_at: string;
   courses?: string[] | null; // Array of course codes
+  availability?: AvailabilitySlot[] | null; // Array of time slots
 }
 
 export interface Match {
@@ -36,5 +43,21 @@ export interface SessionParticipant {
   session_id: string;
   user_id: string;
   joined_at: string;
+}
+
+export interface Swipe {
+  id: string;
+  swiper_id: string;
+  target_id: string;
+  direction: 'like' | 'pass';
+  created_at: string;
+}
+
+export interface Message {
+  id: string;
+  match_id: string;
+  sender_id: string;
+  content: string;
+  created_at: string;
 }
 

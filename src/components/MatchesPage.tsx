@@ -1,74 +1,38 @@
 import { MessageCircle, Clock } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-
-const mockMatches = [
-  {
-    id: '1',
-    name: 'Maxim Q.',
-    course: 'COMP302',
-    major: 'Computer Science',
-    lastMessage: "Hey! Want to study for the midterm1 together?",
-    time: '2h ago',
-    unread: true,
-    image: '/images/maxim.jpg',
-  },
-  {
-    id: '2',
-    name: 'Cheela Z.',
-    course: 'COMP302',
-    major: 'Computer Science',
-    lastMessage: "Thanks for the help with lazy programming!",
-    time: '5h ago',
-    unread: false,
-    image: '/images/monkey.jpg',
-  },
-  {
-    id: '3',
-    name: 'Jake Paul',
-    course: 'MGCR222',
-    major: 'Marketing',
-    lastMessage: "Are you free to study tomorrow afternoon?",
-    time: '1d ago',
-    unread: true,
-    image: 'https://ntvb.tmsimg.com/assets/assets/943387_v9_bb.jpg',
-  },
-  {
-    id: '4',
-    name: 'Wonyound Jang',
-    course: 'PSYC213',
-    major: 'Psychology',
-    lastMessage: "Great session today! Same time next week?",
-    time: '2d ago',
-    unread: false,
-    image: 'https://tse4.mm.bing.net/th/id/OIP.nbziaMpyfb0DYAbLlq7FnAHaLI?cb=ucfimg2ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3',
-  },
-  {
-    id: '5',
-    name: 'Jake Sim',
-    course: 'COMP251',
-    major: 'Computer Science',
-    lastMessage: "I found a great resource for greedy algorithms!",
-    time: '3d ago',
-    unread: false,
-    image: 'https://www.koreandrama.org/wp-content/uploads/EKbyp_5f.jpg',
-  },
-  {
-    id: '6',
-    name: 'Kujo Jotaro',
-    course: 'ATOC568',
-    major: 'Atmospheric and Oceanic Sciences',
-    lastMessage: "Can you explain that concept again?",
-    time: '4d ago',
-    unread: false,
-    image: 'https://i.pinimg.com/originals/bb/f8/4b/bbf84bb79038908db4bec25418d47ee1.jpg?nii=t',
-  },
-];
+import { useMatches } from '../hooks/useMatches';
 
 interface MatchesPageProps {
   onNavigate: (page: string) => void;
 }
 
 export function MatchesPage({ onNavigate }: MatchesPageProps) {
+  const { matches, loading, error } = useMatches();
+
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto p-8">
+        <h1 className="mb-8">Your Matches</h1>
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-[#757bc8] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading matches...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto p-8">
+        <h1 className="mb-8">Your Matches</h1>
+        <div className="text-center text-red-600 py-20">
+          <p>Error loading matches: {error}</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="max-w-6xl mx-auto p-8">
       <div className="flex justify-between items-center mb-8">
@@ -77,12 +41,12 @@ export function MatchesPage({ onNavigate }: MatchesPageProps) {
           <p className="text-gray-600">Connect with your study buddies</p>
         </div>
         <div className="px-4 py-2 bg-gradient-to-r from-[#757bc8] to-[#9fa0ff] text-white rounded-xl">
-          {mockMatches.filter(m => m.unread).length} new messages
+          {matches.length} {matches.length === 1 ? 'match' : 'matches'}
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {mockMatches.map((match) => (
+          {matches.map((match) => (
           <div
             key={match.id}
             onClick={() => onNavigate('chat')}
