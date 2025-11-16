@@ -31,10 +31,15 @@ export interface Match {
 
 export interface StudySession {
   id: string;
+  host_id: string;
   title: string;
   description: string | null;
-  course: string | null;
-  created_by: string;
+  course_code: string | null;
+  location: string | null;
+  start_time: string;
+  end_time: string | null;
+  is_public: boolean;
+  max_participants: number;
   created_at: string;
 }
 
@@ -42,7 +47,15 @@ export interface SessionParticipant {
   id: string;
   session_id: string;
   user_id: string;
+  role: string; // 'host', 'participant', 'invited'
+  status: string; // 'accepted', 'invited', 'declined'
   joined_at: string;
+}
+
+export interface SessionWithDetails extends StudySession {
+  host?: Profile;
+  participants?: (SessionParticipant & { profile?: Profile })[];
+  participant_count?: number;
 }
 
 export interface Swipe {

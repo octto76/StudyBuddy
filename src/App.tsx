@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from "./context/AuthContext";
 import { useProfile } from "./hooks/useProfile";
 import AuthPage from "./pages/AuthPage";
@@ -12,6 +12,8 @@ import { CreateSessionPage } from './components/CreateSessionPage';
 import { SessionsPage } from './components/SessionsPage';
 import { SessionDetailPage } from './components/SessionDetailPage';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from './lib/supabaseClient';
+import type { StudySession } from './types';
 
 
 export default function App() {
@@ -19,6 +21,29 @@ export default function App() {
   const { profile, loading: profileLoading, setProfile } = useProfile();
   const [currentPage, setCurrentPage] = useState('discover');
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const [editSession, setEditSession] = useState<StudySession | null>(null);
+
+  // Load session for editing - MUST be before any conditional returns
+  useEffect(() => {
+    if (currentPage === 'edit-session' && selectedSessionId) {
+      loadSessionForEdit(selectedSessionId);
+    }
+    
+    async function loadSessionForEdit(sessionId: string) {
+      try {
+        const { data, error } = await supabase
+          .from('study_sessions')
+          .select('*')
+          .eq('id', sessionId)
+          .single();
+        
+        if (error) throw error;
+        setEditSession(data);
+      } catch (err) {
+        console.error('Error loading session for edit:', err);
+      }
+    }
+  }, [currentPage, selectedSessionId]);
 
   // While checking auth or profile
   if (authLoading || profileLoading) {
@@ -63,6 +88,10 @@ export default function App() {
     if (sessionId) {
       setSelectedSessionId(sessionId);
     }
+    // Clear edit session when leaving edit page
+    if (page !== 'edit-session') {
+      setEditSession(null);
+    }
   };
 
   const renderPage = () => {
@@ -78,16 +107,19 @@ export default function App() {
       case 'profile':
         return <ProfilePage />;
       case 'create-session':
-        return <CreateSessionPage />;
+        return <CreateSessionPage onNavigate={handleNavigate} />;
+      case 'edit-session':
+        return <CreateSessionPage onNavigate={handleNavigate} editSession={editSession} />;
       case 'session-detail':
-        return <SessionDetailPage onNavigate={handleNavigate} />;
+        return selectedSessionId ? (
+          <SessionDetailPage onNavigate={handleNavigate} sessionId={selectedSessionId} />
+        ) : (
+          <div>Session not found</div>
+        );
       default:
         return <DiscoverPage />;
     }
   };
-
-  // Special layout for chat and session detail (no left padding)
-  const isFullWidth = currentPage === 'chat' || currentPage === 'session-detail';
 
   return (
     <div className="flex">
