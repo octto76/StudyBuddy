@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Calendar, MapPin, Users, Clock, ArrowLeft, Send, Edit, UserPlus } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useAuth } from "../context/AuthContext";
 import { useSessionDetail, joinSession, inviteToSession, getMatchedUsers } from "../hooks/useSessions";
+import { useSessionChat } from "../hooks/useSessionChat";
 import type { Profile } from "../types";
 
 interface SessionDetailPageProps {
@@ -13,12 +14,14 @@ interface SessionDetailPageProps {
 export function SessionDetailPage({ onNavigate, sessionId }: SessionDetailPageProps) {
   const { user } = useAuth();
   const { session, loading, refetch } = useSessionDetail(sessionId, user?.id || null);
+  const { messages, loading: chatLoading, sendMessage, sending } = useSessionChat(sessionId);
   const [message, setMessage] = useState("");
   const [joining, setJoining] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [matchedUsers, setMatchedUsers] = useState<Profile[]>([]);
   const [inviting, setInviting] = useState<Set<string>>(new Set());
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (user && session?.host_id === user.id) {
@@ -26,6 +29,11 @@ export function SessionDetailPage({ onNavigate, sessionId }: SessionDetailPagePr
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, session?.host_id]);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const loadMatchedUsers = async () => {
     if (!user) return;
@@ -75,6 +83,39 @@ export function SessionDetailPage({ onNavigate, sessionId }: SessionDetailPagePr
     }
   };
 
+  const handleSendMessage = async () => {
+    if (!message.trim() || sending) return;
+
+    try {
+      await sendMessage(message);
+      setMessage('');
+    } catch (err) {
+      console.error('Failed to send message:', err);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const formatMessageTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / 60000);
+    
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -95,6 +136,7 @@ export function SessionDetailPage({ onNavigate, sessionId }: SessionDetailPagePr
   const isParticipant = session.participants?.some(p => p.user_id === user?.id && p.status === 'accepted');
   const isInvited = session.participants?.some(p => p.user_id === user?.id && p.status === 'invited');
   const isFull = (session.participant_count || 0) >= session.max_participants;
+  const canChat = isHost || isParticipant;
 
   const formatDateTime = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -309,40 +351,98 @@ export function SessionDetailPage({ onNavigate, sessionId }: SessionDetailPagePr
         {/* Chat Header */}
         <div className="bg-white border-b border-gray-200 p-6">
           <h3>Group Chat</h3>
-          <p className="text-sm text-gray-600">Session discussion (Coming Soon)</p>
+          <p className="text-sm text-gray-600">
+            {canChat ? 'Chat with session participants' : 'Join the session to participate in chat'}
+          </p>
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-gray-500 mb-2">Group chat functionality coming soon!</p>
-            <p className="text-sm text-gray-400">Connect with participants through the chat once the session starts.</p>
-          </div>
+        <div className="flex-1 overflow-y-auto p-6">
+          {chatLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-gray-500">Loading messages...</p>
+            </div>
+          ) : messages.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <p className="text-gray-500 mb-2">No messages yet</p>
+                <p className="text-sm text-gray-400">Be the first to start the conversation!</p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {messages.map((msg) => {
+                const isOwnMessage = msg.sender_id === user?.id;
+                const senderName = msg.sender_profile?.full_name || msg.sender_profile?.username || 'Unknown User';
+                
+                return (
+                  <div
+                    key={msg.id}
+                    className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div className={`flex gap-3 max-w-[70%] ${isOwnMessage ? 'flex-row-reverse' : 'flex-row'}`}>
+                      {/* Avatar */}
+                      <ImageWithFallback
+                        src={msg.sender_profile?.avatar_url || undefined}
+                        alt={senderName}
+                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                      />
+                      
+                      {/* Message Bubble */}
+                      <div className={`flex flex-col ${isOwnMessage ? 'items-end' : 'items-start'}`}>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs font-medium text-gray-700">
+                            {isOwnMessage ? 'You' : senderName}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {formatMessageTime(msg.created_at)}
+                          </span>
+                        </div>
+                        <div
+                          className={`px-4 py-2 rounded-2xl ${
+                            isOwnMessage
+                              ? 'bg-gradient-to-r from-[#757bc8] to-[#9fa0ff] text-white'
+                              : 'bg-white border border-gray-200 text-gray-800'
+                          }`}
+                        >
+                          <p className="text-sm break-words">{msg.content}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
         </div>
 
         {/* Message Input */}
         <div className="bg-white border-t border-gray-200 p-6">
-          <div className="flex gap-3">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type a message..."
-              className="flex-1 px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:border-[#9fa0ff]"
-              disabled
-              onKeyPress={(e) => {
-                if (e.key === "Enter") {
-                  setMessage("");
-                }
-              }}
-            />
-            <button 
-              disabled
-              className="px-6 py-3 bg-gradient-to-r from-[#757bc8] to-[#9fa0ff] text-white rounded-2xl hover:shadow-lg transition-shadow flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Send className="w-5 h-5" />
-            </button>
-          </div>
+          {!canChat ? (
+            <div className="text-center text-sm text-gray-500 py-2">
+              Join this session to participate in the chat
+            </div>
+          ) : (
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Type a message..."
+                className="flex-1 px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:border-[#9fa0ff]"
+                disabled={sending}
+              />
+              <button 
+                onClick={handleSendMessage}
+                disabled={!message.trim() || sending}
+                className="px-6 py-3 bg-gradient-to-r from-[#757bc8] to-[#9fa0ff] text-white rounded-2xl hover:shadow-lg transition-shadow flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Send className="w-5 h-5" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

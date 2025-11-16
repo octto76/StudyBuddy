@@ -62,13 +62,29 @@ export function useSessions(userId: string | null) {
 
       if (publicError) throw publicError;
 
-      // Fetch participant counts for all sessions
-      const allSessionIds = [
+      // Collect all unique host IDs
+      const allSessions = [
         ...(mySessionsData || []),
         ...invitedSessionsData,
         ...(publicSessionsData || [])
-      ].map(s => s.id);
+      ];
+      const allSessionIds = allSessions.map(s => s.id);
+      const hostIds = Array.from(new Set(allSessions.map(s => s.host_id)));
 
+      // Fetch host profiles in a single batched query
+      const { data: hostProfiles, error: hostError } = await supabase
+        .from('profiles')
+        .select('*')
+        .in('id', hostIds);
+
+      if (hostError) {
+        console.error('Error fetching host profiles:', hostError);
+      }
+
+      // Create a map from host_id to profile
+      const profileById = new Map(hostProfiles?.map(p => [p.id, p]));
+
+      // Fetch participant counts for all sessions
       const { data: participantCounts } = await supabase
         .from('session_participants')
         .select('session_id')
@@ -79,16 +95,17 @@ export function useSessions(userId: string | null) {
         countMap.set(p.session_id, (countMap.get(p.session_id) || 0) + 1);
       });
 
-      // Attach participant counts
-      const addCounts = (sessions: StudySession[]): SessionWithDetails[] =>
+      // Attach participant counts and host profiles
+      const enrichSessions = (sessions: StudySession[]): SessionWithDetails[] =>
         sessions.map(s => ({
           ...s,
-          participant_count: countMap.get(s.id) || 0
+          participant_count: countMap.get(s.id) || 0,
+          host: profileById.get(s.host_id)
         }));
 
-      setMySessions(addCounts(mySessionsData || []));
-      setInvitedSessions(addCounts(invitedSessionsData));
-      setPublicSessions(addCounts(publicSessionsData || []));
+      setMySessions(enrichSessions(mySessionsData || []));
+      setInvitedSessions(enrichSessions(invitedSessionsData));
+      setPublicSessions(enrichSessions(publicSessionsData || []));
     } catch (err: any) {
       console.error('Error loading sessions:', err);
       setError(err.message);

@@ -10,7 +10,6 @@ interface SwipeCardProps {
     year: string;
     courses: string[];
     availability: string[];
-    studyStyle: string[];
     bio: string;
     image: string;
   };
@@ -82,24 +81,6 @@ export function SwipeCard({ user, onSwipe }: SwipeCardProps) {
                 className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm"
               >
                 {course}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Study Style */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-2 h-2 rounded-full bg-linear-to-r from-[#8e94f2] to-[#bbadff]" />
-            <h4 className="text-sm text-gray-600">Study Style</h4>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {user.studyStyle.map((style) => (
-              <span
-                key={style}
-                className="px-3 py-1.5 bg-linear-to-r from-[#8e94f2]/10 to-[#bbadff]/10 text-[#757bc8] rounded-lg text-sm border border-[#8e94f2]/20"
-              >
-                {style}
               </span>
             ))}
           </div>

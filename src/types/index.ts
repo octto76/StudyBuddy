@@ -74,3 +74,16 @@ export interface Message {
   created_at: string;
 }
 
+export interface SessionMessage {
+  id: string;
+  session_id: string;
+  sender_id: string;
+  content: string;
+  created_at: string;
+  sender_profile?: {
+    username?: string | null;
+    full_name?: string | null;
+    avatar_url?: string | null;
+  };
+}
+

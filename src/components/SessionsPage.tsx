@@ -2,6 +2,7 @@ import { Plus, Search, Calendar, MapPin, Users, Clock } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useSessions } from "../hooks/useSessions";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 import type { SessionWithDetails } from "../types";
 
 interface SessionsPageProps {
@@ -86,6 +87,8 @@ export function SessionsPage({ onNavigate }: SessionsPageProps) {
     const { date, time } = formatDateTime(session.start_time);
     const duration = calculateDuration(session.start_time, session.end_time);
     const isFull = (session.participant_count || 0) >= session.max_participants;
+    const isMySession = session.host_id === user?.id;
+    const hostName = isMySession ? "You" : (session.host?.full_name || session.host?.username || "Unknown Host");
 
     return (
       <div
@@ -131,9 +134,13 @@ export function SessionsPage({ onNavigate }: SessionsPageProps) {
         {/* Footer */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-200">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#757bc8] to-[#9fa0ff]" />
+            <ImageWithFallback
+              src={session.host?.avatar_url || undefined}
+              alt={hostName}
+              className="w-8 h-8 rounded-full object-cover"
+            />
             <span className="text-sm text-gray-600">
-              {showEditButton ? "You" : "Hosted"}
+              Hosted by {hostName}
             </span>
           </div>
 
