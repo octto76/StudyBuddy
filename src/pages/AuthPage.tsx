@@ -32,7 +32,14 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div
+      className="min-h-screen flex items-center justify-center bg-gray-50 px-4"
+      style={{
+        backgroundImage: `url('/images/background.jpeg')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <div className="w-full max-w-md">
         {/* Logo/Header */}
         <div className="text-center mb-8">
@@ -40,12 +47,20 @@ export default function AuthPage() {
             src="/images/logo.png"
             alt="StudyBuddy logo"
             className="mx-auto mb-4 object-contain"
-            style={{ width: "180px", height: "180px" }}
+            style={{ width: "175px", height: "auto" }}
           />
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-[#757bc8] to-[#e0c3fc] bg-clip-text text-transparent mb-2">
+          <h1
+            className="text-4xl font-bold bg-gradient-to-r from-[#757bc8] to-[#e0c3fc] bg-clip-text text-transparent mb-2"
+            style={{
+              fontSize: "60px",
+              fontWeight: "bold",
+            }}
+          >
             StudyBuddy
           </h1>
-          <p className="text-gray-600">Find your perfect study partner</p>
+          <p className="text-gray-600" style={{ fontSize: "30px" }}>
+            Find your perfect study partner
+          </p>
         </div>
 
         <form
@@ -57,8 +72,8 @@ export default function AuthPage() {
               {mode === "login" ? "Welcome Back" : "Create Account"}
             </h2>
             <p className="text-sm text-gray-600">
-              {mode === "login" 
-                ? "Log in to continue your study journey" 
+              {mode === "login"
+                ? "Log in to continue your study journey"
                 : "Join StudyBuddy to find your study partners"}
             </p>
           </div>
@@ -77,7 +92,7 @@ export default function AuthPage() {
               placeholder="you@example.com"
               type="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -85,12 +100,14 @@ export default function AuthPage() {
           {/* Username only in register mode */}
           {mode === "register" && (
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Username</label>
+              <label className="text-sm font-medium text-gray-700">
+                Username
+              </label>
               <input
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:border-[#9fa0ff] focus:ring-2 focus:ring-[#9fa0ff]/20 transition-all"
                 placeholder="studykid123"
                 value={username}
-                onChange={e => setUsername(e.target.value)}
+                onChange={(e) => setUsername(e.target.value)}
                 required={mode === "register"}
               />
               <p className="text-xs text-gray-500">
@@ -101,13 +118,15 @@ export default function AuthPage() {
 
           {/* Password */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Password</label>
+            <label className="text-sm font-medium text-gray-700">
+              Password
+            </label>
             <input
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:border-[#9fa0ff] focus:ring-2 focus:ring-[#9fa0ff]/20 transition-all"
               placeholder="••••••••"
               type="password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
             />
